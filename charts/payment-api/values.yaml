@@ -1,0 +1,36 @@
+# Default values for payment-api. Override in values-dev.yaml / values-staging.yaml.
+
+replicaCount: 1
+
+image:
+  repository: ""   # e.g. REGION-docker.pkg.dev/PROJECT/REPO/payment-api
+  tag: ""        # e.g. from github.sha
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: "payment-api"
+
+serviceAccount:
+  create: true
+  name: ""       # KSA name; annotate with GSA for Workload Identity
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+
+# Health and tracing: ensure app exposes /health and sends traces.
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5

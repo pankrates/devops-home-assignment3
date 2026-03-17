@@ -1,0 +1,3 @@
+# Dev overrides (example)
+replicaCount: 1
+# image.tag set by pipeline

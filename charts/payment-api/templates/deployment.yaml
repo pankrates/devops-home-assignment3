@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "payment-api.fullname" . }}
+  labels:
+    app: {{ include "payment-api.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "payment-api.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "payment-api.name" . }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | default (include "payment-api.fullname" .) }}
+      containers:
+        - name: payment-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}

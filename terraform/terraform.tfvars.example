@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars and fill in. Do not commit terraform.tfvars.
+# Required for GCS backend: create the bucket and set prefix as needed.
+
+project_id = "your-gcp-project-id"
+region     = "europe-west1"
+
+# GCS backend (create bucket first, then uncomment in backend.tf or pass -backend-config)
+# backend_bucket = "your-terraform-state-bucket"
+# backend_prefix = "payment-api/dev"
