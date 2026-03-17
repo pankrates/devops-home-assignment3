@@ -1,0 +1,18 @@
+# Stub: Replace with your GitHub Actions workflow.
+# Required: build image -> push to GCP Artifact Registry -> quality/security gates (e.g. Trivy) -> Helm upgrade --install -> rollback on failure.
+# Tag image with e.g. ${{ github.sha }} and use same tag in Helm deploy.
+# Document GCP auth (e.g. google-github-actions/auth or GitHub secrets) in README.
+
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  # workflow_dispatch:  # optional: allow manual run
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Replace this job with build, scan, and Helm deploy jobs."
