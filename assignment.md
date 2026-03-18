@@ -1,13 +1,15 @@
 # Senior DevOps Engineer – Home Assignment
 
-**Time budget:** 4–6 hours  
+**LLM and AI agents:** Are welcome and recommended to use (Claude, Cursor, Copilot, Gemini or similar)
+
+**Time budget:** 4–6 hours  (or less if you use Agents)
 **Deliverable:** GitHub repository (link to be submitted)
 
 ---
 
 ## Scenario
 
-You will provision and operate a **GCP environment for a fictional “payment API”**. The bar is production-ready: secure defaults, repeatable deployments, and observable operations. Use your own GCP project (or a sandbox we provide); tear down resources after the assignment if using a temporary project.
+You will provision and operate a **GCP environment for a fictional “payment API”**. The bar is production-ready: secure defaults, repeatable deployments, and observable operations. Use your own GCP project (subscribe to GCP Free Trial which gets you a $300 credit); tear down resources after the assignment if using a temporary project.
 
 ---
 
@@ -94,7 +96,6 @@ The payment API runs on GKE. On-call must be able to find logs, interpret health
 
 - Real payment logic or PCI compliance; “payment API” is a label only.
 - Multi-region GKE or full DR (good to mention in the summary).
-- **Not allowed:** Pulumi or other IaC; Cloud Run or non-GKE compute; Cloud Build or GitLab CI for CI; deploying the app via raw `kubectl apply` (Helm required for CD).
 
 ---
 
