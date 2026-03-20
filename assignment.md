@@ -1,15 +1,17 @@
 # Senior DevOps Engineer – Home Assignment
 
-**LLM and AI agents:** Are welcome and recommended to use (Claude, Cursor, Copilot, Gemini or similar)
+**LLM and AI agents:** You are welcome and recommended to use Claude, Cursor, Copilot, Gemini or similar.
 
 **Time budget:** 4–6 hours  (or less if you use Agents)
 **Deliverable:** GitHub repository (link to be submitted)
+**Environment:** Use your own test GCP account (subscribe for GCP Free Trial); tear down resources after the assignment if using a temporary project.
 
 ---
 
 ## Scenario
 
-You will provision and operate a **GCP environment for a fictional “payment API”**. The bar is production-ready: secure defaults, repeatable deployments, and observable operations. Use your own GCP project (subscribe to GCP Free Trial which gets you a $300 credit); tear down resources after the assignment if using a temporary project.
+You will provision and operate a **GCP environment for a fictional “payment API”**. The bar is production-ready: secure defaults, repeatable deployments, and observable operations. 
+
 
 ---
 
