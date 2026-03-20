@@ -3,7 +3,9 @@
 **LLM and AI agents:** You are welcome and recommended to use Claude, Cursor, Copilot, Gemini or similar.
 
 **Time budget:** 4–6 hours  (or less if you use Agents)
+
 **Deliverable:** GitHub repository (link to be submitted)
+
 **Environment:** Use your own test GCP account (subscribe for GCP Free Trial); tear down resources after the assignment if using a temporary project.
 
 ---
