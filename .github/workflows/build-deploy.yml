@@ -98,6 +98,7 @@ jobs:
       - name: Get GKE credentials via Connect Gateway
         uses: google-github-actions/get-gke-credentials@v3
         with:
+          project_id: ${{ env.PROJECT_ID }}
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.REGION }}
           use_connect_gateway: true

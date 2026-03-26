@@ -28,6 +28,7 @@ locals {
     "connectgateway.googleapis.com",
     "gkehub.googleapis.com",
     "iam.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
   ]
 }
 
