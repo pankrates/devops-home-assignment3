@@ -102,6 +102,7 @@ jobs:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.REGION }}
           use_connect_gateway: true
+          fleet_membership_name: projects/${{ env.PROJECT_ID }}/locations/${{ env.REGION }}/memberships/${{ env.GKE_CLUSTER }}
 
       - name: Install Helm
         uses: azure/setup-helm@v4.3.0
