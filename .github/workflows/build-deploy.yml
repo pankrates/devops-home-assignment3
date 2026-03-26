@@ -27,10 +27,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run hadolint
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: app/Dockerfile
 
@@ -48,11 +48,11 @@ jobs:
       image_tag: ${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Authenticate to GCP via Workload Identity Federation (no SA key)
       - id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.WIF_PROVIDER }}
           service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
@@ -65,7 +65,7 @@ jobs:
           docker build -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} app/
 
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: table
@@ -87,23 +87,23 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.WIF_PROVIDER }}
           service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
 
       - name: Get GKE credentials via Connect Gateway
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@v3
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.REGION }}
           use_connect_gateway: true
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v4.3.0
 
       - name: Helm deploy (upgrade --install)
         id: helm_deploy
