@@ -100,6 +100,17 @@ resource "google_artifact_registry_repository" "payment_api" {
   description   = "Docker repository for payment-api images"
 }
 
+# Allow GKE nodes to pull images from Artifact Registry
+data "google_compute_default_service_account" "default" {
+  project = var.project_id
+}
+
+resource "google_project_iam_member" "nodes_ar_reader" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
 # =====================================================================
 # Static IP for Ingress
 # =====================================================================

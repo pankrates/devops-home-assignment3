@@ -13,6 +13,13 @@ resource "google_secret_manager_secret_iam_member" "secret_access" {
   member    = "serviceAccount:${google_service_account.payment_api.email}"
 }
 
+# ---------- Cloud Trace — allow app to export traces ----------
+resource "google_project_iam_member" "trace_agent" {
+  project = var.project_id
+  role    = "roles/cloudtrace.agent"
+  member  = "serviceAccount:${google_service_account.payment_api.email}"
+}
+
 # ---------- Workload Identity binding: KSA → GSA ----------
 resource "google_service_account_iam_member" "workload_identity" {
   service_account_id = google_service_account.payment_api.name
