@@ -3,13 +3,15 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /build
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir pip==26.0.1 setuptools==82.0.1 wheel==0.46.3 && \
     pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # ---------- runtime stage ----------
 FROM python:3.11-slim
 
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir pip==26.0.1 setuptools==82.0.1 wheel==0.46.3 && \
     groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
 
 WORKDIR /app
