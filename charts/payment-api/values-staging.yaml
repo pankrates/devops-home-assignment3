@@ -1,5 +1,5 @@
-# Dev environment overrides
-replicaCount: 1
+# Staging environment overrides
+replicaCount: 2
 
 serviceAccount:
   annotations:

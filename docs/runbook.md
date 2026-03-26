@@ -1,30 +1,67 @@
 # Runbook: API returns 5xx
 
-> **Candidate:** Replace this stub with your runbook. Required:
-> - 3–5 concrete steps (exact Cloud Logging filter, exact metric/chart names in Cloud Monitoring, what to check in GKE: pod status, events, recent rollout).
-> - One escalation or remediation hint (e.g. if pods are CrashLoopBackOff, check Secret Manager access and Workload Identity).
-
 ## 1. Check pod status
 
 ```bash
-kubectl get pods -l app=payment-api -n <namespace>
-kubectl describe pod <pod-name> -n <namespace>
+kubectl get pods -l app=payment-api -n payment-api
+kubectl describe pod <pod-name> -n payment-api
+kubectl get events -n payment-api --sort-by='.lastTimestamp' | head -20
 ```
 
-## 2. Check logs
+Look for: `CrashLoopBackOff`, `ImagePullBackOff`, `OOMKilled`, or pending pods.
 
-(Add exact Cloud Logging filter here, e.g. `resource.type="k8s_container"`, `resource.labels.container_name="payment-api"`.)
+## 2. Check application logs in Cloud Logging
 
-## 3. Check metrics and alerts
+Open **Logs Explorer** in GCP Console and paste this filter:
 
-(Add exact metric names and where to view in Cloud Monitoring.)
+```
+resource.type="k8s_container"
+resource.labels.project_id="YOUR_PROJECT_ID"
+resource.labels.cluster_name="payment-api-cluster"
+resource.labels.namespace_name="payment-api"
+resource.labels.container_name="payment-api"
+severity>=ERROR
+```
 
-## 4. Recent rollout
+For all logs (not just errors), remove the `severity>=ERROR` line.
+
+To filter for 5xx responses specifically:
+
+```
+resource.type="k8s_container"
+resource.labels.namespace_name="payment-api"
+resource.labels.container_name="payment-api"
+jsonPayload.status>=500
+```
+
+## 3. Check metrics and alerts in Cloud Monitoring
+
+1. Go to **Monitoring → Alerting** — check if the **"Payment API Health Check Failure"** alert has fired.
+2. Go to **Monitoring → Uptime Checks** — check the **"payment-api-health"** uptime check status.
+3. Go to **Monitoring → Metrics Explorer** and query:
+   - Metric: `monitoring.googleapis.com/uptime_check/check_passed`
+   - Filter: `check_id = "payment-api-health"`
+
+## 4. Check recent rollout
 
 ```bash
-kubectl rollout history deployment/payment-api -n <namespace>
+kubectl rollout status deployment/payment-api -n payment-api
+kubectl rollout history deployment/payment-api -n payment-api
+```
+
+If the latest rollout is the cause, rollback:
+
+```bash
+helm rollback payment-api 0 -n payment-api --wait
 ```
 
 ## 5. Escalation / remediation
 
-(Add hint, e.g. CrashLoopBackOff → verify Secret Manager and Workload Identity.)
+| Symptom | Action |
+|---------|--------|
+| **CrashLoopBackOff** | Check logs (step 2). Common cause: Secret Manager access failure — verify Workload Identity binding: `kubectl describe sa payment-api -n payment-api` should show annotation `iam.gke.io/gcp-service-account`. Verify GSA has `secretmanager.secretAccessor` on the secret. |
+| **ImagePullBackOff** | Verify Artifact Registry image exists: `gcloud artifacts docker images list REGION-docker.pkg.dev/YOUR_PROJECT_ID/payment-api-repo/payment-api`. Check node SA has `artifactregistry.reader` role. |
+| **OOMKilled** | Increase memory limits in Helm values and redeploy. |
+| **Pods running but 5xx** | Check app logs for stack traces. Verify Secret Manager secret has a version: `gcloud secrets versions list payment-api-key`. Check Cloud Trace for slow/failed spans. |
+
+**Escalation:** If unresolved after 15 minutes, escalate to the platform engineering team with: pod describe output, last 50 log lines, and recent rollout history.

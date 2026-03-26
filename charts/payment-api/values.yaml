@@ -1,10 +1,8 @@
-# Default values for payment-api. Override in values-dev.yaml / values-staging.yaml.
-
 replicaCount: 1
 
 image:
-  repository: ""   # e.g. REGION-docker.pkg.dev/PROJECT/REPO/payment-api
-  tag: ""        # e.g. from github.sha
+  repository: ""   # e.g. us-central1-docker.pkg.dev/PROJECT/payment-api-repo/payment-api
+  tag: ""          # set by pipeline (github.sha)
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -12,25 +10,42 @@ fullnameOverride: "payment-api"
 
 serviceAccount:
   create: true
-  name: ""       # KSA name; annotate with GSA for Workload Identity
+  name: "payment-api"
+  annotations: {}
+    # iam.gke.io/gcp-service-account: payment-api-sa@PROJECT.iam.gserviceaccount.com
 
 service:
   type: ClusterIP
   port: 8080
 
 ingress:
-  enabled: false
+  enabled: true
+  staticIpName: "payment-api-ingress-ip"  # matches google_compute_global_address in Terraform
 
-# Health and tracing: ensure app exposes /health and sends traces.
+env: []
+  # - name: GCP_PROJECT_ID
+  #   value: "your-project-id"
+  # - name: SECRET_NAME
+  #   value: "payment-api-key"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
 livenessProbe:
   httpGet:
     path: /health
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
+
 readinessProbe:
   httpGet:
-    path: /health
+    path: /ready
     port: http
   initialDelaySeconds: 5
   periodSeconds: 5

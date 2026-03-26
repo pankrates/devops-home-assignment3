@@ -1,17 +1,21 @@
-# Stub: GCP service account for payment API with minimal permissions (e.g. Secret Manager secretAccessor).
-# Workload Identity: Kubernetes SA -> GCP SA binding (google_service_account_iam_member for workloadIdentityUser).
-# Output: GSA email for pipeline/Helm.
+# ---------- Google Service Account ----------
+resource "google_service_account" "payment_api" {
+  account_id   = "payment-api-sa"
+  display_name = "Payment API Service Account"
+  project      = var.project_id
+}
 
-variable "project_id" { type = string }
-variable "cluster_name" { type = string }
-variable "cluster_location" { type = string }
-variable "kubernetes_namespace" { type = string }
-variable "kubernetes_sa_name" { type = string }
+# ---------- Secret Manager access — scoped to ONE secret only ----------
+resource "google_secret_manager_secret_iam_member" "secret_access" {
+  project   = var.project_id
+  secret_id = var.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.payment_api.email}"
+}
 
-# Add: google_service_account, google_project_iam_member (secretmanager.secretAccessor), 
-#      google_service_account_iam_member (workloadIdentityUser) for the K8s SA.
-# Create K8s SA and annotate in Helm or separate manifest.
-
-output "gsa_email" {
-  value = "stub@${var.project_id}.iam.gserviceaccount.com"
+# ---------- Workload Identity binding: KSA → GSA ----------
+resource "google_service_account_iam_member" "workload_identity" {
+  service_account_id = google_service_account.payment_api.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[${var.kubernetes_namespace}/${var.kubernetes_sa_name}]"
 }
